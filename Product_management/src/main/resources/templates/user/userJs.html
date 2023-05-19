@@ -1,0 +1,365 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<th:block th:fragment="userJs">
+
+    <script src="/assets/sweetalert/v11.7.3/sweetalert2.all.min.js"></script>
+
+    <!-- Vendor js -->
+    <script src="/assets/js/demo/vendor.min.js"></script>
+
+    <!-- Third Party js-->
+    <script src="/assets/libs/peity/jquery.peity.min.js"></script>
+    <script src="/assets/libs/apexcharts/apexcharts.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+
+
+
+    <!-- App js -->
+    <script src="/assets/js/demo/app.min.js"></script>
+    <script src="/assets/js/AppBase.js"></script>
+    <script>
+        let currentId;
+        let productDTO = new ProductDTO();
+        let page_size = 5;
+        let current_page = 0;
+        const page = {
+            urls: {
+                getAllProducts: AppBase.API_PRODUCT,
+                getProduct: AppBase.API_PRODUCT,
+                search: AppBase.API_SEARCH
+            },
+            elements: {},
+            loadData: {},
+            commands: {},
+            dialogs: {
+                elements: {},
+                loadData: {},
+                commands: {},
+            }
+        }
+
+
+
+
+        page.elements.bthSearch = $('#btnSearch');
+        page.elements.searchInput = $('#keyword');
+
+
+        page.dialogs.elements.wrapper = $("section .wrapper");
+        page.dialogs.elements.productName = $("#productName");
+        page.dialogs.elements.description = $("#description");
+        page.dialogs.elements.imageFile = $("#imageFile");
+        page.dialogs.elements.wrapperContent = $("section .wrapper .content");
+        page.dialogs.elements.imagePreview = $("section .image-preview");
+        page.dialogs.elements.imagePreviewCanvas = $("section .image-preview canvas");
+        // page.dialogs.elements.canvas = $("#canvas");
+        // page.dialogs.elements.context = page.dialogs.elements.canvas[0].getContext('2d');
+        page.dialogs.elements.imagePreviewCanvas.css("display", "none");
+        // page.dialogs.elements.divImagePreview = $("div.image-preview, div.file-name");
+
+
+
+        page.loadData.getAllProducts = () => {
+
+            $.ajax({
+                type: 'GET',
+                url: page.urls.getAllProducts
+            })
+                .done((data) => {
+                    //console.log(data)
+                    // let products = data.content;
+
+                    // let pageable = data.pageable;
+                    // let totalPage = data.totalPages;
+
+                    let {pageable, totalPages, content} = data;
+
+
+                    let str = renderPaging(pageable, totalPages);
+                    $('#table-product tbody').html("");
+                    $("#paginationUl").empty();
+                    $("#paginationUl").append(str);
+                    $.each(content, (i, item) => {
+                        let productMedia = new ProductMedia(item.id, item.fileFolder, item.fileName, item.fileUrl);
+                        productDTO = new ProductDTO(item.id, item.productName, item.price, item.quantity, item.description, item.category, productMedia);
+                        let str = renderProduct(productDTO);
+                        $('#table-product tbody').prepend(str);
+                    })
+
+
+                    page.commands.handleAddEventPageLink();
+                    page.commands.handleSortPriceUp();
+                    page.commands.handleSortPriceDown();
+
+                })
+                .fail((error) => {
+                    console.log(error);
+                })
+        }
+
+
+
+
+        page.loadData.findProductById = (productId) => {
+            return $.ajax({
+                type: "GET",
+                url: page.urls.getProduct + "/" + productId,
+            })
+                .done((data) => {
+                })
+                .fail((jqXHR) => {
+                    let errors = jqXHR.responseJSON;
+                    if (errors) {
+                        let str = "";
+                        $.each(errors, (k, v) => {
+                            str += `${v}`
+                        })
+                        AppBase.errorAlert(str);
+                    }
+                })
+        }
+        let category = "id";
+        let direction = "desc";
+        page.loadData.searchByProductName = (key) => {
+            let url = page.urls.getAllProducts + '?page=' + current_page + '&size=' + page_size + "&sort="+category +"&direction="+direction
+            if (key) {
+                url += '&q=' + key;
+            }
+            $.ajax({
+                type: "GET",
+                url: url
+            })
+                .done((data) => {
+                    $('#table-product tbody').empty();
+                    $("#paginationUl").empty();
+                    let products = data.content;
+                    let pageable = data.pageable;
+                    let totalPage = data.totalPages;
+                    let str = renderPaging(pageable, totalPage);
+                    $("#paginationUl").empty();
+                    $("#paginationUl").append(str);
+
+
+                    $.each(products, (i, item) => {
+                        let td_text = (page_size * current_page) + i + 1;
+                        let productMedia = new ProductMedia(item.id, item.fileFolder, item.fileName, item.fileUrl);
+                        productDTO = new ProductDTO(item.id, item.productName, item.price, item.quantity, item.description, item.category, productMedia);
+                        if(current_page == pageable.pageNumber){
+                            stt = i+1 + (page_size * current_page);
+                        }
+
+                        let str = renderProduct(productDTO,stt);
+                        $('#table-product tbody').append(str);
+                        $('#td_' + productDTO.id).append(td_text);
+                    })
+
+                    page.commands.handleAddEventPageLink();
+                    page.commands.handleSortPriceUp();
+                    page.commands.handleSortPriceDown();
+                })
+                .fail((error) => {
+                    console.log(error);
+                    if(error.status === 401){
+                        window.location = '/login'
+                    }
+                })
+        }
+
+
+
+
+
+        function addEventPageLink() {
+            $(".page-item").click(() => {
+                current_page = +$(this).data("page");
+                current_page -= 1;
+                page.loadData.getAllProducts();
+            })
+        }
+
+
+
+
+
+        page.dialogs.commands.loadImageToCanvas = (imageFile, fileType, imageUrl) => {
+            page.dialogs.elements.imagePreviewCanvas.css("display", "");
+            page.dialogs.elements.wrapper.addClass("active");
+            page.dialogs.elements.wrapperContent.css("opacity", 0);
+
+            page.dialogs.elements.wrapper.addClass("active");
+            page.dialogs.elements.wrapperContent.css("opacity", 0);
+
+            let imageObj = new Image();
+
+            imageObj.onload = function () {
+                page.dialogs.elements.context.canvas.width = imageObj.width;
+                page.dialogs.elements.context.canvas.height = imageObj.height;
+                page.dialogs.elements.context.drawImage(imageObj, 0, 0, imageObj.width, imageObj.height);
+
+
+                page.dialogs.elements.contextUp.canvas.width = 445;
+                page.dialogs.elements.contextUp.canvas.height = 345;
+                page.dialogs.elements.contextUp.drawImage(imageObj, 0, 0, 445, 345);
+            };
+            console.log(fileType)
+            if (fileType === "BINARY") {
+                imageObj.src = URL.createObjectURL(imageFile);
+            } else {
+                imageObj.src = imageUrl;
+            }
+        }
+
+
+
+
+
+        $(".modal").on('hidden.bs.modal', () => {
+            $('.modal form').validate().resetForm();
+            page.dialogs.elements.formCreate[0].reset();
+            page.dialogs.elements.formUpdate[0].reset();
+            $(".modal .modal-alert-danger").removeClass("show").addClass("hide");
+            $('.modal .modal-alert-danger').empty().removeClass("show").addClass("hide");
+            $('.modal form').find("input.error").removeClass("error");
+        })
+
+
+
+
+
+        page.commands.handleAddEventPageLink = () => {
+            $('.page-link').on('click', function () {
+                let pageNumber = $(this).data('page');
+                current_page = pageNumber;
+                let key = page.elements.searchInput.val();
+                page.loadData.searchByProductName(key,category, direction);
+                $(".fas fa-caret-down").off("click");
+                $(".fas fa-caret-up").off("click");
+            })
+        }
+
+        page.commands.handleSortPriceUp = () => {
+            console.log($($(".fa-caret-up")[0]))
+            $($(".fa-caret-up")[0]).on("click", function () {
+                let key = page.elements.searchInput.val();
+                category = "price";
+                direction = "asc"
+                page.loadData.searchByProductName(key,category, direction);
+                $("#price").attr("title", "Sort price high to low");
+                $($(".fa-caret-up")[0]).off("click");
+                $($(".fa-caret-up")[0]).off("click");
+            })
+        }
+        //
+        page.commands.handleSortPriceDown = () => {
+            $($(".fa-caret-down")[0]).on("click", function () {
+                let key = page.elements.searchInput.val();
+                category = "price";
+                direction = "desc"
+                page.loadData.searchByProductName(key,category, direction);
+                $("#price").attr("title", "Sort price low to high");
+                $(".fas fa-caret-down").off("click");
+                $(".fas fa-caret-up").off("click");
+            })
+        }
+
+
+
+
+
+        function renderPaging(pageable, totalPage) {
+            let str = "";
+            if (current_page === 0) {
+                str = "";
+            } else {
+                str = `
+                        <li class="page-item page-link" data-page="${current_page - 1}">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </li>
+                       `;
+            }
+            for (let i = 1; i <= totalPage; i++) {
+                if ((i - 1) === pageable.pageNumber) {
+                    str += `
+                            <li class="page-item page-link active" data-page="${i - 1}">${i}</li>
+                `;
+                } else {
+                    str += `<li class="page-item page-link" data-page="${i - 1}">${i}</li>`;
+                }
+            }
+            if (current_page === totalPage - 1) {
+                str += "";
+            } else {
+                str += `<li class="page-item page-link" data-page="${current_page + 1}">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only">Next</span>
+                    </li>
+            `;
+            }
+            return str;
+        }
+
+        function renderProduct(productDTO,stt) {
+            let mediaUrl = `${AppBase.API_CLOUDINARY}/${AppBase.SCALE_IMAGE_W_80_H_80_Q_100}/v1682323798/${productDTO.productMedia.fileFolder}/${productDTO.productMedia.fileName}`;
+            return `<tr id="tr_${productDTO.id}">
+                        <td>${stt}</td>
+                        <td>
+                            <img src="${mediaUrl}" alt="${productDTO.fileName}" >
+                        </td>
+                        <td>${productDTO.productName}</td>
+                        <td>${new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(productDTO.price)}</td>
+                        <td>${productDTO.quantity}</td>
+                        <td>${productDTO.description}</td>
+                        <td>${productDTO.category.categoryName }</td>
+                        <td>
+                            <button type="button" class="btn edit" data-id="${productDTO.id}">
+                                <i class=" fas fa-shopping-cart"></i>
+                            </button>
+                        </td>
+                  </tr>`
+        }
+
+
+
+
+
+
+
+
+
+        page.initializeControlEvent = () => {
+
+            page.elements.searchInput.on("keypress", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    page.elements.bthSearch.click();
+                }
+            });
+
+            page.elements.bthSearch.on("click", function () {
+                let key = page.elements.searchInput.val();
+                page.loadData.searchByProductName(key,category, direction);
+            })
+            addEventPageLink();
+        }
+
+        page.commands.loadData = () => {
+
+            page.loadData.searchByProductName(undefined,category, direction);
+
+        }
+
+        $(() => {
+            page.commands.loadData();
+            page.initializeControlEvent();
+        })
+
+
+
+
+    </script>
+
+</th:block>

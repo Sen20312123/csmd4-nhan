@@ -1,0 +1,65 @@
+ul li {
+    list-style-type: none;
+}
+
+.paging_button {
+    border-radius: 30px!important;
+    margin: 0 3px;
+    border: none;
+    z-index: 1;
+}
+
+.paging_button:hover {
+    cursor: pointer;
+}
+#keyword {
+    background: #323a46;
+    color: #adb5bd;
+    font-size: .8125rem;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: left;
+}
+select {
+    background: #434b56;
+    color: #adb5bd;
+}
+
+i {
+    font-size: 18px;
+}
+
+i:hover {
+    cursor: pointer;
+    color: #3232f3;
+}
+
+#search {
+    height: 1.8rem;
+}
+.fe-upload-cloud{
+    font-size: 100px;
+}
+.modal-alert-danger {
+    padding: 10px 35px;
+    margin-bottom: 15px;
+    color: #ec1225;
+    background-color: #bec4d5;
+    border-color: #7f9bde;
+}
+
+.show {
+    display: block !important;
+}
+
+.hide {
+    display: none;
+}
+
+label.error {
+    display: list-item;
+}
+
+input.error {
+    border: solid 1px red;
+}

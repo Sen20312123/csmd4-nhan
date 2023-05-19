@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <th:block th:replace="head :: head"/>
+    <title>Dashboard</title>
+
+    <link rel="stylesheet" href="/assets/css/dashboard/dashboard.css">
+    <link rel="stylesheet" href="/assets/css/dashboard/preview-image.css">
+    <link rel="stylesheet" href="/assets/css/loading.css">
+</head>
+<body>
+
+<!-- Begin page -->
+<div id="wrapper">
+
+    <div id="loading" class="lds-heart heart-hide"><div></div></div>
+
+    <!-- Topbar Start -->
+    <th:block th:replace="temp :: top-bar"></th:block>
+    <!-- end Topbar -->
+
+    <!-- ========== Left Sidebar Start ========== -->
+    <th:block th:replace="temp :: left-side"></th:block>
+    <!-- Left Sidebar End -->
+
+    <!-- ============================================================== -->
+    <!-- Start Page Content here -->
+    <!-- ============================================================== -->
+
+    <div class="content-page">
+        <div class="content">
+
+            <!-- Start Content-->
+            <div class="container-fluid">
+
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item active">
+                                        <button type="button"
+                                                class="btn btn-success btn-rounded waves-effect waves-light"
+                                                id="btnShowCreateModal">Add Product
+                                        </button>
+                                    </li>
+                                </ol>
+                            </div>
+                            <h4 class="page-title">Products List</h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card-box">
+                            <div class="mb-2 d-flex justify-content-between">
+                                <div>
+
+                                </div>
+                                <div class="d-flex">
+                                    <span class="align-self-center mr-2">Search: </span>
+                                    <input id="keyword" class="rounded form-control form-control-sm"
+                                           placeholder="Search..."/>
+                                    <div class="ml-2">
+                                        <button class="btn btn-success" id="btnSearch">
+                                            <span>Search</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-dark mb-0 d-table" id="table-product">
+                                    <thead class="align-content-center">
+                                    <tr class=" justify-content-between">
+                                        <th class=" align-self-center border-0">#</th>
+                                        <th class=" align-self-center border-0">Image</th>
+                                        <th id="productName" class=" align-self-center border-0">Product Name</th>
+                                        <th id="price" data-toggle="tooltip" title="Sort price high to low"
+                                            class="align-self-center border-0">Price <i class="fas fa-caret-up"></i><i class="fas fa-caret-down"></i>
+                                        </th>
+                                        <th id="quantity" class=" align-self-center border-0">Quantity</th>
+                                        <th class=" align-self-center border-0">Description</th>
+                                        <th class=" align-self-center border-0">Category</th>
+                                        <th colspan="2" class=" align-self-center border-0">Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="border-top border-dark  ">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="py-2">
+                                <nav aria-label="Page navigation example" style="display: flex; justify-content: end">
+                                    <ul class="pagination justify-content-between" id="paginationUl">
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div> <!-- end card-box -->
+                    </div> <!-- end col -->
+                </div>
+                <!--- end row -->
+
+
+                <!-- end row -->
+
+            </div>
+        </div> <!-- content -->
+        <th:block th:replace="product/allModal :: modalCreate"/>
+        <th:block th:replace="product/allModal :: modalEdit"/>
+
+        <!-- Footer Start -->
+        <th:block th:replace="temp :: footer"></th:block>
+        <!-- end Footer -->
+
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- End Page content -->
+    <!-- ============================================================== -->
+</div>
+<!-- END wrapper -->
+
+<!-- Right Sidebar -->
+
+
+<!-- Right bar overlay-->
+
+<th:block th:replace="temp :: right-bar"></th:block>
+<div class="rightbar-overlay"></div>
+
+<!-- Vendor js -->
+<th:block th:replace="product/productJs :: productJs"></th:block>
+
+</body>
+</html>

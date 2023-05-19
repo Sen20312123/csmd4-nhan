@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="/assets/css/dashboard/login.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/sweetalert/v11.7.3/sweetalert2.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"
+            integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+    <script src="/assets/sweetalert/v11.7.3/sweetalert2.all.min.js"></script>
+    <script src="/assets/js/AppBase.js"></script>
+
+
+
+</head>
+<body>
+<div class ="row">
+    <div class="col-md-6 mx-auto p-0">
+        <div class="card">
+            <div class="login-box">
+                <div class="login-snip">
+                    <input id="tab-1" type="radio" name="tab" class="sign-in" checked>
+                    <label for="tab-1" class="tab">Login</label>
+                    <input id="tab-2" type="radio" name="tab" class="sign-up">
+                    <label for="tab-2" class="tab">Sign Up</label>
+                    <div class="login-space">
+                        <form action="" id="frmLogin" class="login" method="post">
+                                <div class="group">
+                                    <label class="label">Username</label>
+                                    <input id="usernameLog" type="text" class="input"  placeholder="Enter your username">
+                                </div>
+                                <div class="group">
+                                    <label class="label">Password</label>
+                                    <input id="passwordLog" type="password" class="input" data-type="password" placeholder="Enter your password">
+                                </div>
+                                <div class="group">
+                                    <input id="check" type="checkbox" class="check" checked>
+                                    <label for="check"><span class="icon"></span> Keep me Signed in</label>
+                                </div>
+                                <div class="group">
+                                    <input type="submit" id="btnLogin" class="button" value="Sign In">
+                                </div>
+                                <div class="hr"></div>
+                                <div class="foot">
+                                    <a href="#">Forgot Password?</a>
+                                </div>
+                        </form >
+                        <form action="" id="frmSignUp" class="sign-up-form" method="post">
+                            <div class="group">
+                                <label class="label">Username</label>
+                                <input id="usernameReg" type="text" class="input" placeholder="Create your Username">
+                            </div>
+                            <div class="group">
+                                <label class="label">Password</label>
+                                <input id="passwordReg" type="password" class="input" data-type="password" placeholder="Create your password">
+                            </div>
+                            <div class="field">
+                                <input id="inputRole" size="1px" value="USER" required>
+                            </div>
+                            <div class="group">
+                                <input type="submit" id="btnReg" class="button" value="Sign Up">
+                            </div>
+                            <div class="hr"></div>
+                            <div class="foot">
+                                <label for="tab-1">Already Member?</label>
+                            </div>
+                        </form >
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const page = {
+        urls: {
+            authLogin: AppBase.API_LOGIN,
+            register: AppBase.API_REGISTER
+        },
+        elements: {},
+        loadData: {},
+        commands: {}
+    }
+
+    page.elements.usernameLog = $('#usernameLog');
+    page.elements.passwordLog = $('#passwordLog');
+
+
+
+    page.elements.usernameReg = $("#usernameReg");
+    page.elements.passwordReg = $("#passwordReg");
+    page.elements.roleReg = $("#inputRole");
+
+    page.elements.btnLogin = $('#btnLogin');
+    page.elements.btnReg = $('#btnReg');
+
+    $('#frmSignUp').submit((e) => {
+        e.preventDefault()
+        page.elements.btnReg.trigger('click')
+    })
+
+    $('#frmLogin').submit((e) => {
+        e.preventDefault()
+        page.elements.btnLogin.trigger('click')
+    })
+
+    page.elements.btnLogin.on("click", () => {
+        let username = page.elements.usernameLog.val();     //admin admin => products / user,user=> users
+        let password = page.elements.passwordLog.val();
+
+        let obj = {
+            username,
+            password
+        }
+
+        $.ajax({
+            headers: {
+                'accept': 'application/json',
+                'content-type': 'application/json'
+            },
+            type: 'POST',
+            url: page.urls.authLogin,
+            data: JSON.stringify(obj)
+        })
+            .done((data) => {
+                if(data.roles[0].authority == 'USER'){
+                    location.href = "/users";
+                }else{
+                    location.href = "/products";
+                }
+            })
+            .fail((jqXHR) => {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'warning',
+                    title: 'Please register an account',
+                    showConfirmButton: false,
+                    timer: 2000
+                })
+                console.log(jqXHR);
+            })
+    })
+
+    page.elements.btnReg.on("click", () => {
+        let username = page.elements.usernameReg.val();
+        let password = page.elements.passwordReg.val();
+        let role = page.elements.roleReg.val();
+        let roleID;
+        if (role == "USER"){
+            roleID = 2;
+        }
+
+        let obj = {
+            username,
+            password,
+            role :{
+                id: roleID
+            }
+        }
+        console.log(obj);
+
+        $.ajax({
+            headers: {
+                'accept': 'application/json',
+                'content-type': 'application/json'
+            },
+            type: 'POST',
+            url: page.urls.register,
+            data: JSON.stringify(obj)
+        })
+            .done((data) => {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Create user account successful',
+                    showConfirmButton: false,
+                    timer: 2000
+                })
+                location.href = "/users";
+            })
+            .fail((jqXHR) => {
+                console.log(jqXHR);
+            })
+    })
+</script>
+</body>
+</html>

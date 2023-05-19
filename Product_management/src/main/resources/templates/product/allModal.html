@@ -1,0 +1,188 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<th:block th:fragment="modalCreate">
+
+    <div class="modal fade" id="createModal"  data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Create new product</h1>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-alert-danger hide"></div>
+                <form id="formCreateProduct" method="post">
+                    <div class="modal-body">
+                        <fieldset class="row g-3">
+                            <div class="col-lg-7">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="productNameCre" class="form-label">Product Name</label>
+                                        <input class="col-md-12 form-control" type="text" id="productNameCre"
+                                               name="productNameCre">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="priceCre" class="form-label">Price</label>
+                                        <input class="col-md-12 form-control" type="text" id="priceCre"
+                                               name="priceCre">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="quantityCre" class="form-label">Quantity</label>
+                                        <input class="col-md-12 form-control" type="text" id="quantityCre"
+                                               name="quantityCre">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="categoryIdCre" class="">Category</label>
+                                        <select class="col-md-12 form-control" id="categoryIdCre" name="categoryIdCre">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>Description</label>
+                                        <textarea id="descriptionCre" name="descriptionCre" rows="3"
+                                                  class="form-control border-input"
+                                                  placeholder="Here can be product's description"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-5 " >
+                                <section>
+                                    <div class="wrapper active">
+                                        <div class="image-preview">
+                                            <canvas id="canvas" style="display: none;"></canvas>
+                                        </div>
+                                        <div class="content">
+                                            <div class="icon">
+                                                <i class="fe-upload-cloud"></i>
+                                            </div>
+                                            <div class="text">
+                                                No file chosen, yet!
+                                            </div>
+                                            <div class="text">
+                                                Max file size = 2MB
+                                            </div>
+                                        </div>
+                                        <div class="clear-image-preview">
+                                            <i class="fas fa-times"></i>
+                                        </div>
+                                        <div class="file-name">
+                                            Change image
+                                        </div>
+                                    </div>
+                                    <input type="file" id="imageFile" accept="image/jpeg, image/png" hidden="">
+                                </section>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger waves-effect waves-light" data-dismiss="modal">
+                            Close<span class="btn-label-right"><i class="mdi mdi-close-circle-outline"></i></span>
+                        </button>
+                        <button type="button" class="btn btn-success waves-effect waves-light" id="btnCreate">
+                            Create <span class="btn-label-right"><i class="mdi mdi-check-all"></i></span>
+                        </button>
+                    </div>
+                    </form>
+
+                <!-- end card-body-->
+            </div> <!-- end card-->
+        </div>
+
+
+    </div>
+</th:block>
+<th:block th:fragment="modalEdit">
+    <div class="modal fade" id="editModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Update product</h1>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-alert-danger hide"></div>
+                <form id="formUpdateProduct" method="post">
+                    <div class="modal-body">
+                        <fieldset class="row g-3">
+                            <div class="col-lg-7">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="productNameUp" class="form-label">Product Name</label>
+                                        <input class="col-md-12 form-control" type="text" id="productNameUp"
+                                               name="productNameUp">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="priceUp" class="form-label">Price</label>
+                                        <input class="col-md-12 form-control" type="text" id="priceUp"
+                                               name="priceUp">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="quantityUp" class="form-label">Quantity</label>
+                                        <input class="col-md-12 form-control" type="text" id="quantityUp"
+                                               name="quantityUp">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="categoryIdUp" class="">Category</label>
+                                        <select class="col-md-12 form-control" id="categoryIdUp" name="categoryIdUp">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="descriptionUp">Description</label>
+                                        <textarea id="descriptionUp" name="descriptionUp" rows="3"
+                                                  class="form-control border-input"
+                                                  placeholder="Here can be product's description"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                                <section>
+                                    <div class="wrapper active">
+                                        <div class="image-preview">
+                                            <canvas id="canvasUp" style="display: none;"></canvas>
+                                        </div>
+                                        <div class="content">
+                                            <div class="icon">
+                                                <i class="fe-upload-cloud"></i>
+                                            </div>
+                                            <div class="text">
+                                                No file chosen, yet!
+                                            </div>
+                                            <div class="text">
+                                                Max file size = 2MB
+                                            </div>
+                                        </div>
+                                        <div class="clear-image-preview">
+                                            <i class="fas fa-times"></i>
+                                        </div>
+                                        <div class="file-name">
+                                            Change image
+                                        </div>
+                                    </div>
+                                    <input type="file" id="imageFileUp" accept="image/jpeg, image/png" hidden="">
+                                </section>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger waves-effect waves-light" data-dismiss="modal">
+                            Close<span class="btn-label-right"><i class="mdi mdi-close-circle-outline"></i></span>
+                        </button>
+                        <button type="button" class="btn btn-success waves-effect waves-light" id="btnUpdate">
+                            Update <span class="btn-label-right"><i class="mdi mdi-check-all"></i></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</th:block>
